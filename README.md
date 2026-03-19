@@ -181,3 +181,21 @@ via not rebuilding targets that are not used during testing.
 To get the full error message in Android Studio - select the `build` tab at
 the bottom of Android Studio, and then select the topmost error group
 (`Build: failed at`); it should show you the full log.
+
+
+### Local Development
+Clone the `cargo-ndk-android-gradle` repo to `<local_path>/cargo-ndk-android-gradle`
+
+In your Android project:
+* Update settings.gradle.kts to add `includeBuild` to `pluginManagement`
+
+```kotlin
+pluginManagement {
+    includeBuild("<local_path>/cargo-ndk-android-gradle")
+
+```
+* Add `cargo-ndk` to `gradle/libs.versions.toml`
+```toml
+cargo-ndk = { id = "com.github.willir.rust.cargo-ndk-android" }
+```
+
