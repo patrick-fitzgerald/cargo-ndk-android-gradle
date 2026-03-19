@@ -4,17 +4,22 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
+import org.gradle.process.ExecOperations
 import org.gradle.process.internal.ExecException
+import javax.inject.Inject
 
 import java.nio.file.Files
 import java.nio.file.Path
 import groovy.json.JsonSlurper
 
-class CargoNdkBuildTask extends DefaultTask {
+abstract class CargoNdkBuildTask extends DefaultTask {
     @Input String variant
     @Input CargoNdkExtension extension
 
     private CargoNdkConfig config
+
+    @Inject
+    protected abstract ExecOperations getExecOperations()
 
     @TaskAction
     void buildRust() {
@@ -72,7 +77,7 @@ class CargoNdkBuildTask extends DefaultTask {
         }
         logger.info("Executing: ${cmd} from ${cwd} with extra env: ${extraEnv}")
 
-        project.exec {
+        execOperations.exec {
             workingDir = cwd
             commandLine = cmd
             environment extraEnv
@@ -110,7 +115,7 @@ class CargoNdkBuildTask extends DefaultTask {
 
         def os = new ByteArrayOutputStream()
 
-        project.exec {
+        execOperations.exec {
             workingDir = cargoDirPath
             commandLine = cmd
             standardOutput = os
@@ -161,7 +166,7 @@ class CargoNdkBuildTask extends DefaultTask {
         int exitValue
         def os = new ByteArrayOutputStream()
         try {
-            def p = project.exec {
+            def p = execOperations.exec {
                 commandLine = cmd
                 standardOutput = os
                 errorOutput = os
